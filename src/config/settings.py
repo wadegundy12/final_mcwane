@@ -1,29 +1,10 @@
-# Sources Configurations
-
+# Sales Configurations
 SALES_DATA_SOURCE = "sql"
-SALES_OUTPUT_FILE_NAME = "processed_sales_data.csv"
-SALES_COLUMNS = [
-    "PostDate",
-    "ShipTons",
-    "CompanyID"
-]
 SALES_DATE_COLUMN = "PostDate"
 SALES_NUMERICAL_COLUMN = "ShipTons"
-SALES_COMPANY_ID_COLUMN = "CompanyID"
-SALES_COMPANY_ID = "MDUT"
-
-# TODO: Check if CompanyID is in SQL DB. If so, update sql_sales_dao.py with SALES_COLUMNS
 SALES_COLUMNS_SQL = [
-    "PostDate",
-    "ShipTons"
-]
-
-
-OPPORTUNITIES_DATA_SOURCE = "excel"
-OPPORTUNITIES_OUTPUT_FILE_NAME = "processed_opportunities_data.csv"
-OPPORTUNITIES_COLUMNS = [
-    "CloseDate",
-    "Total_Tons__c"
+    SALES_DATE_COLUMN,
+    SALES_NUMERICAL_COLUMN
 ]
 
 #FRED API Configuration
@@ -31,3 +12,11 @@ BASE_YEAR = 2007
 
 # Export Configurations
 REPORT_DIR = "."
+
+# Model Configurations
+TARGET_COL = "ShipTons"
+
+SALES_LAGS = [1, 2, 3,4,5,6]
+ROLLING_WINDOWS = [3]
+
+INFLATION_LAGS = [1, 2, 3]
