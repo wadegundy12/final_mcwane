@@ -9,10 +9,11 @@ Orchestrates the complete data pipeline:
 from pathlib import Path
 import pandas as pd
 from datetime import datetime
+from service.model_service import ModelService
+from external.fred_client import FredClient
+from service.sales_service import SalesService
+from config.settings import BASE_YEAR, REPORT_DIR
 
-from ..external.fred_client import FredClient
-from ..config.settings import BASE_YEAR, REPORT_DIR
-from ..service.sales_service import SalesService
 
 class PipelineService:
     """Coordinates all data sources and transformations"""
@@ -20,6 +21,7 @@ class PipelineService:
     def __init__(self):
         self.fred_client = FredClient(BASE_YEAR)
         self.sales_service = SalesService()
+        self.model_service = ModelService()
     
     def execute(self, output_dir: Path = None) -> dict:
         """
@@ -47,13 +49,14 @@ class PipelineService:
         processed = self._process_data(external_data, internal_data)
         print(f'Processed: {processed.shape[0]} rows and {processed.shape[1]} columns.')
         
-        # TODO: Input processed data to model. Inflation rate lag: 2 months, GDP growth rate lag: 8 months.
+        lagged = self.model_service.prepare_features(processed)
+        self.model_service.train(lagged)
 
         # Step 4: Save results
-        self._save_results(processed, output_dir)
+        self._save_results(lagged, output_dir)
         
         # Step 5: Generate metrics
-        metrics = self._generate_metrics(processed)
+        metrics = self._generate_metrics(lagged)
         
         today = datetime.now().strftime('%m-%d-%Y')
         return {

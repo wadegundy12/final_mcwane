@@ -94,8 +94,8 @@ class FredClient:
         df['date'] = df['date'] + pd.offsets.MonthEnd(0)
 
         df['value'] = pd.to_numeric(df['value'], errors='coerce')
-        df = df.dropna(subset=['value'])
-
+        df['value'] = df['value'].ffill()
+        
         df.rename(columns={'value' : name}, inplace=True)
 
         return df[['date', name]]
@@ -104,7 +104,8 @@ class FredClient:
         """Fetch monthly Consumer Price Index (CPI) data from the FRED API as % change (inflation rate).
         """
         raw = self._fetch_series_data(series_id = INFLATION_RATE_ID, units = 'pch')
-        df = self._to_df(data = raw, name = "inflation_rate")
+        df = self._to_df(data = raw, name = "inflation")
+        df = df.ffill() # Solves possible missing values from government shutdowns.
         return df
 
     def fetch_interest_rate_data(self):

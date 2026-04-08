@@ -6,7 +6,7 @@ Or imported by GUI: from src.main import run_pipeline
 """
 import argparse
 from pathlib import Path
-from src.service.pipeline_service import PipelineService
+from service.pipeline_service import PipelineService
 
 def run_pipeline(output_dir: Path = None) -> dict:
     """

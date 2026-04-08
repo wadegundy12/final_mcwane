@@ -1,6 +1,6 @@
 
-from ..dao.sales_dao import SalesDAO
-from ..config.settings import SALES_DATE_COLUMN, SALES_NUMERICAL_COLUMN
+from dao.sales_dao import SalesDAO
+from config.settings import SALES_DATE_COLUMN, SALES_NUMERICAL_COLUMN
 import pandas as pd
 
 class SalesService:
@@ -29,7 +29,7 @@ class SalesService:
         # Rename columns for clarity
         self.sales = self.sales.rename(columns={
             'month': 'date',
-            SALES_NUMERICAL_COLUMN: f'{SALES_NUMERICAL_COLUMN}_monthly_sum'
+            SALES_NUMERICAL_COLUMN: f'{SALES_NUMERICAL_COLUMN}'
         })
         
         

@@ -5,11 +5,11 @@ import threading
 import sys
 from pathlib import Path
 from io import StringIO
+from main import run_pipeline
+
 
 # Add project root for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.main import run_pipeline
 
 class PipelineGUI:
     def __init__(self):

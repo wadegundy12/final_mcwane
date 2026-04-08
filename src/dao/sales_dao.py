@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import pyodbc
 from dotenv import load_dotenv
-from ..config.settings import SALES_COLUMNS_SQL, SALES_DATE_COLUMN
+from config.settings import SALES_COLUMNS_SQL, SALES_DATE_COLUMN
 
 class SalesDAO:
     """

@@ -21,7 +21,7 @@ class ModelService:
         }
         self.model = XGBRegressor(**params)
 
-    def _prepare_features(self, df: pd.DataFrame) -> pd.DataFrame:
+    def prepare_features(self, df: pd.DataFrame) -> pd.DataFrame:
 
         features = df.copy().sort_values("date").reset_index(drop=True)
         features["month"] = features["date"].dt.month
@@ -50,26 +50,20 @@ class ModelService:
             feature_name =  f"inflation_lag_{lag}"
             features[feature_name] = features["inflation"].shift(lag)
             inflation_features.append(feature_name)
+        
 
-    def train(self, df: pd.DataFrame, target_col: str):
-        """
-        Train model (placeholder for now).
-        """
-        df = df.dropna()
+        return features
 
-        X = df.drop(columns=[target_col])
-        y = df[target_col]
+    def train(self, df: pd.DataFrame):
+        df = df.dropna().reset_index(drop=True)
+        X = df.drop(columns=[TARGET_COL])
+        y = df[TARGET_COL]
 
-        # ---- MODEL PLACEHOLDER ----
-        # Later: plug in XGBoost here
-        self.model = {
-            "trained": True,
-            "features": X.columns.tolist()
-        }
+        self.model.fit(X, y)
 
-        return self.model
+        return
 
-    def forecast(self, df: pd.DataFrame, periods: int = 3):
+    def forecast(self, df: pd.DataFrame, periods: int = 3) -> pd.DataFrame:
         """
         Predict into the future (placeholder).
         """

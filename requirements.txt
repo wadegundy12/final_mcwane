@@ -5,3 +5,4 @@ pyodbc
 requests
 openpyxl
 xgboost
+scikit-learn
