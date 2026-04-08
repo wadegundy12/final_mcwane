@@ -26,18 +26,8 @@ OPPORTUNITIES_COLUMNS = [
     "Total_Tons__c"
 ]
 
-OPPORTUNITIES_DATE_COLUMN = "CloseDate"
-OPPORTUNITIES_NUMERICAL_COLUMN = "Total_Tons__c"
-
 #FRED API Configuration
 BASE_YEAR = 2007
 
-# Sales Excel Configurations
-SALES_EXL_FILE_NAME = "Sales and Opportunities.xlsx"
-SALES_SHEET_NAME = "Sales"
-SALES_HEADER_ROW = 0
-
-# Opportunities Excel Configurations
-OPPORTUNITIES_EXL_FILE_NAME = "Sales and Opportunities.xlsx"
-OPPORTUNITIES_SHEET_NAME = "Opportunities"
-OPPORTUNITIES_HEADER_ROW = 1
+# Export Configurations
+REPORT_DIR = "."
