@@ -4,9 +4,17 @@ Main pipeline orchestration.
 Can be run as CLI: python -m src.main --run
 Or imported by GUI: from src.main import run_pipeline
 """
+
+import sys
 import argparse
 from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent))
+
+
+
 from service.pipeline_service import PipelineService
+
+
 
 def run_pipeline(output_dir: Path = None) -> dict:
     """
