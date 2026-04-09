@@ -6,3 +6,4 @@ requests
 openpyxl
 xgboost
 scikit-learn
+matplotlib

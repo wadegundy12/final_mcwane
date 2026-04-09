@@ -8,11 +8,12 @@ Orchestrates the complete data pipeline:
 """
 from pathlib import Path
 import pandas as pd
+import matplotlib.pyplot as plt
 from datetime import datetime
 from service.model_service import ModelService
 from external.fred_client import FredClient
 from service.sales_service import SalesService
-from config.settings import BASE_YEAR, REPORT_DIR
+from config.settings import BASE_YEAR, FUTURE_MONTHS, REPORT_DIR
 
 
 class PipelineService:
@@ -51,9 +52,13 @@ class PipelineService:
         
         lagged = self.model_service.prepare_features(processed)
         self.model_service.train(lagged)
+        forecasted = self.model_service.forecast(lagged)
+
 
         # Step 4: Save results
-        self._save_results(lagged, output_dir)
+        self._save_results(forecasted, output_dir)
+
+        self._plot_results(forecasted)
         
         # Step 5: Generate metrics
         metrics = self._generate_metrics(lagged)
@@ -79,6 +84,7 @@ class PipelineService:
         """Merge and process"""
         internal['date'] = internal['date'] + pd.offsets.MonthEnd(0)
         df = pd.merge(internal, external, on='date', how='left')
+        df["inflation"] = df["inflation"].ffill()
         df = df.dropna(how='all').dropna(axis=1, how='all')
         return df
     
@@ -96,3 +102,22 @@ class PipelineService:
             # Add your metrics
         }
         return metrics
+    
+    def _plot_results(self, df):
+
+        # Split data
+        train = df.iloc[:-FUTURE_MONTHS]
+        forecast = df.iloc[-FUTURE_MONTHS:]
+
+        # Plot
+        plt.figure()
+
+        plt.plot(train['date'], train['ShipTons'], label='Historical')
+        plt.plot(forecast['date'], forecast['ShipTons'], label='Forecast')
+
+        plt.legend()
+        plt.xlabel('Date')
+        plt.ylabel('ShipTons')
+        plt.title('ShipTons Forecast')
+
+        plt.show()

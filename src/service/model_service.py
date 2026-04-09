@@ -1,7 +1,7 @@
 # src/service/model_service.py
 import pandas as pd
 import numpy as np
-from config.settings import INFLATION_LAGS, ROLLING_WINDOWS, SALES_LAGS, TARGET_COL
+from config.settings import FUTURE_MONTHS, INFLATION_LAGS, ROLLING_WINDOWS, SALES_LAGS, TARGET_COL
 from xgboost import XGBRegressor
 
 
@@ -56,24 +56,48 @@ class ModelService:
 
     def train(self, df: pd.DataFrame):
         df = df.dropna().reset_index(drop=True)
-        X = df.drop(columns=[TARGET_COL])
+        X = df.drop(columns=[TARGET_COL, "date"])
         y = df[TARGET_COL]
 
         self.model.fit(X, y)
 
         return
 
-    def forecast(self, df: pd.DataFrame, periods: int = 3) -> pd.DataFrame:
-        """
-        Predict into the future (placeholder).
-        """
-        # ---- FORECAST PLACEHOLDER ----
-        future = pd.DataFrame({
-            "forecast": [0] * periods
-        })
+    def forecast(self, df: pd.DataFrame) -> pd.DataFrame:
+        future = df.copy()
+        for _ in range(FUTURE_MONTHS):
+            last_row = future.iloc[-1:].copy()
+            last_row["date"] += pd.DateOffset(months=1)
+            last_row["month"] = last_row["date"].dt.month
+            last_row["quarter"] = last_row["date"].dt.quarter
+            last_row["month_sin"] = np.sin(2 * np.pi * last_row["month"] / 12.0)
+
+            # Update lag features
+            for lag in SALES_LAGS:
+                last_row[f"sales_lag_{lag}"] = future[TARGET_COL].shift(lag).iloc[-1]
+
+            shifted_target = future[TARGET_COL].shift(1)
+            for window in ROLLING_WINDOWS:
+                mean_col = f"sales_roll_mean_{window}"
+                std_col = f"sales_roll_std_{window}"
+                last_row[mean_col] = shifted_target.rolling(window).mean().iloc[-1]
+                last_row[std_col] = shifted_target.rolling(window).std().iloc[-1]
+
+            
+
+            for lag in INFLATION_LAGS:
+                feature_name =  f"inflation_lag_{lag}"
+                last_row[feature_name] = future["inflation"].shift(lag).iloc[-1]
+            
+            # Predict next value
+            X_pred = last_row.drop(columns=[TARGET_COL, "date"])
+            next_value = self.model.predict(X_pred)[0]
+            last_row[TARGET_COL] = next_value
+            future = pd.concat([future, last_row], ignore_index=True)
 
         return future
     
+
 
 
     def _build_base_features(sales_df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
