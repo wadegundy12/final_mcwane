@@ -21,6 +21,6 @@ ROLLING_WINDOWS = [3]
 
 INFLATION_LAGS = [1, 2, 3]
 
-FUTURE_MONTHS = 24
+FUTURE_MONTHS = 12
 
 HISTORY_MONTHS = 6*12 # Set to None to show all history
