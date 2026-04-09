@@ -1,4 +1,5 @@
 
+from datetime import datetime
 from dao.sales_dao import SalesDAO
 from config.settings import SALES_DATE_COLUMN, SALES_NUMERICAL_COLUMN
 import pandas as pd
@@ -28,8 +29,7 @@ class SalesService:
         
         # Rename columns for clarity
         self.sales = self.sales.rename(columns={
-            'month': 'date',
-            SALES_NUMERICAL_COLUMN: f'{SALES_NUMERICAL_COLUMN}'
+            'month': 'date'
         })
         
         
@@ -37,7 +37,17 @@ class SalesService:
 
         self.sales['date'] = pd.to_datetime(self.sales['date'])
 
-        self.sales = self.sales
+        # Get current month
+        current_month = pd.Timestamp(datetime.now()).to_period('M') 
+
+        # Get last month in your data
+        last_month = self.sales.iloc[-1]['date'].to_period('M')
+
+        # If last month IS the current month → drop it
+        if last_month == current_month:
+            self.sales = self.sales.iloc[:-1]
+
+        
 
     def _clean_data(self):
         print("Cleaning sales data...")

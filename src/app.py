@@ -7,10 +7,6 @@ from pathlib import Path
 from io import StringIO
 from main import run_pipeline
 
-
-# Add project root for imports
-
-
 class PipelineGUI:
     def __init__(self):
         self.root = tk.Tk()

@@ -16,9 +16,11 @@ REPORT_DIR = "."
 # Model Configurations
 TARGET_COL = "ShipTons"
 
-SALES_LAGS = [1, 2, 3,4,5,6]
+SALES_LAGS = [1, 2, 3, 4, 5, 6]
 ROLLING_WINDOWS = [3]
 
 INFLATION_LAGS = [1, 2, 3]
 
-FUTURE_MONTHS = 12
+FUTURE_MONTHS = 24
+
+HISTORY_MONTHS = 6*12 # Set to None to show all history

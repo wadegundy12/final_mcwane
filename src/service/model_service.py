@@ -67,7 +67,7 @@ class ModelService:
         future = df.copy()
         for _ in range(FUTURE_MONTHS):
             last_row = future.iloc[-1:].copy()
-            last_row["date"] += pd.DateOffset(months=1)
+            last_row["date"] = (last_row["date"] + pd.DateOffset(months=1)) + pd.offsets.MonthEnd(0)
             last_row["month"] = last_row["date"].dt.month
             last_row["quarter"] = last_row["date"].dt.quarter
             last_row["month_sin"] = np.sin(2 * np.pi * last_row["month"] / 12.0)

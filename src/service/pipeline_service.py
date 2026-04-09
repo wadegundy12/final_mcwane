@@ -6,6 +6,7 @@ Orchestrates the complete data pipeline:
 - Merges and processes
 - Outputs results
 """
+import os
 from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,7 +14,7 @@ from datetime import datetime
 from service.model_service import ModelService
 from external.fred_client import FredClient
 from service.sales_service import SalesService
-from config.settings import BASE_YEAR, FUTURE_MONTHS, REPORT_DIR
+from config.settings import BASE_YEAR, FUTURE_MONTHS, HISTORY_MONTHS, REPORT_DIR, TARGET_COL
 
 
 class PipelineService:
@@ -56,17 +57,20 @@ class PipelineService:
 
 
         # Step 4: Save results
-        self._save_results(forecasted, output_dir)
+        today = datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
 
-        self._plot_results(forecasted)
+        self._save_full_table(forecasted, output_dir, today)
+        self._save_predicted_table(forecasted, output_dir, today)
+
+        self._save_plot(forecasted, output_dir, today)
         
         # Step 5: Generate metrics
         metrics = self._generate_metrics(lagged)
         
-        today = datetime.now().strftime('%m-%d-%Y')
+        
         return {
-            'processed_data': output_dir / f'{today}-report.xlsx',
-            'metrics': output_dir / 'metrics.json',
+            'processed_data': output_dir / f'{today}-table.xlsx',
+            'metrics': output_dir / f'{today}-metrics.json',
             'status': 'success'
         }
     
@@ -88,11 +92,24 @@ class PipelineService:
         df = df.dropna(how='all').dropna(axis=1, how='all')
         return df
     
-    def _save_results(self, data, output_dir):
+    def _save_full_table(self, data, output_dir, today):
         """Save to Excel"""
-        today = datetime.now().strftime('%m-%d-%Y')
+        # Split data
+        train = data.iloc[:-FUTURE_MONTHS]
+        forecast = data.iloc[-(FUTURE_MONTHS+1):]
+
+        if HISTORY_MONTHS is not None:
+            train = train.iloc[-HISTORY_MONTHS:]
         output_dir.mkdir(parents=True, exist_ok=True)
         data.to_excel(output_dir / f'{today}-report.xlsx')
+
+    def _save_predicted_table(self, data, output_dir, today):
+        """Save only predicted values to Excel"""
+        # Split data
+        forecast = data.iloc[-(FUTURE_MONTHS):][["date", TARGET_COL]]
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        forecast.to_excel(output_dir / f'{today}-forecast.xlsx')
     
     def _generate_metrics(self, data):
         """Calculate and save metrics"""
@@ -103,11 +120,14 @@ class PipelineService:
         }
         return metrics
     
-    def _plot_results(self, df):
+    def _save_plot(self, df, output_dir, today):
 
         # Split data
         train = df.iloc[:-FUTURE_MONTHS]
-        forecast = df.iloc[-FUTURE_MONTHS:]
+        forecast = df.iloc[-(FUTURE_MONTHS+1):]
+
+        if HISTORY_MONTHS is not None:
+            train = train.iloc[-HISTORY_MONTHS:]
 
         # Plot
         plt.figure()
@@ -120,4 +140,10 @@ class PipelineService:
         plt.ylabel('ShipTons')
         plt.title('ShipTons Forecast')
 
-        plt.show()
+        # Save figure
+        os.makedirs(output_dir, exist_ok=True)
+        file_path = os.path.join(output_dir, f"{today}_shiptons_forecast.png")
+        plt.savefig(file_path)
+
+        print(f"Saved forecast plot to {file_path}")
+        plt.close()
