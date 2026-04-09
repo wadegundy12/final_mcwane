@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import pyodbc
 from dotenv import load_dotenv
-from config.settings import SALES_COLUMNS_SQL, SALES_DATE_COLUMN
+from src.config.settings import SALES_COLUMNS_SQL, SALES_DATE_COLUMN
 
 class SalesDAO:
     """
@@ -88,7 +88,9 @@ class SalesDAO:
         conn = None
         try:
             conn = self._get_connection()
-            df = pd.read_sql(query, conn)
+            chunks = pd.read_sql(query, conn, chunksize=10000)
+
+            df = pd.concat(chunks)
             return df
         except Exception as e:
             raise RuntimeError(f"Error retrieving sales data: {e}")

@@ -19,7 +19,8 @@ pip install -r requirements.txt
 ### 2. Install ODBC Driver (if not already installed)
 Download and install the Microsoft ODBC Driver for SQL Server:
 - [Windows](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
-- [macOS/Linux](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server)
+- [Linux](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server)
+- [macOS](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/install-microsoft-odbc-driver-sql-server-macos)
 
 ### 3. Create Environment Variables File
 Create a `.env` file in the root directory with the following variables:
@@ -48,7 +49,7 @@ FRED_API_KEY=your-fred-api-key-here
 Launch the GUI application:
 
 ```bash
-python src/app.py
+python -m src.app
 ```
 
 The GUI allows you to:

@@ -9,12 +9,14 @@ Orchestrates the complete data pipeline:
 import os
 from pathlib import Path
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Non-GUI backend for thread safety
 import matplotlib.pyplot as plt
 from datetime import datetime
-from service.model_service import ModelService
-from external.fred_client import FredClient
-from service.sales_service import SalesService
-from config.settings import BASE_YEAR, FUTURE_MONTHS, HISTORY_MONTHS, REPORT_DIR, TARGET_COL
+from src.service.model_service import ModelService
+from src.external.fred_client import FredClient
+from src.service.sales_service import SalesService
+from src.config.settings import BASE_YEAR, FUTURE_MONTHS, HISTORY_MONTHS, REPORT_DIR, TARGET_COL
 
 
 class PipelineService:

@@ -1,7 +1,7 @@
 # src/service/model_service.py
 import pandas as pd
 import numpy as np
-from config.settings import FUTURE_MONTHS, INFLATION_LAGS, ROLLING_WINDOWS, SALES_LAGS, TARGET_COL
+from src.config.settings import FUTURE_MONTHS, INFLATION_LAGS, ROLLING_WINDOWS, SALES_LAGS, TARGET_COL
 from xgboost import XGBRegressor
 
 

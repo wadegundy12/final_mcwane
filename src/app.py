@@ -5,9 +5,7 @@ import threading
 import sys
 from pathlib import Path
 from io import StringIO
-from main import run_pipeline
-
-sys.path.append(str(Path(__file__).resolve().parent))
+from src.main import run_pipeline
 
 
 

@@ -1,7 +1,7 @@
 
 from datetime import datetime
-from dao.sales_dao import SalesDAO
-from config.settings import SALES_DATE_COLUMN, SALES_NUMERICAL_COLUMN
+from src.dao.sales_dao import SalesDAO
+from src.config.settings import SALES_DATE_COLUMN, SALES_NUMERICAL_COLUMN
 import pandas as pd
 
 class SalesService:
